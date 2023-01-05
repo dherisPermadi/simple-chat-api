@@ -5,6 +5,8 @@ ruby '3.1.2'
 
 gem 'active_model_serializers', '~> 0.10.10'
 gem 'bootsnap', '>= 1.4.2', require: false
+gem 'devise', '~> 4.8.1'
+gem 'doorkeeper', '~> 5.5.4'
 gem 'dotenv-rails', '~> 2.8.1'
 gem 'enumerize', '~> 2.5.0'
 gem 'kaminari', '~> 1.2.2'
@@ -20,8 +22,6 @@ end
 
 group :development do
   gem 'listen', '~> 3.2'
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

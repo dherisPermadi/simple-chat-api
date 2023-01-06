@@ -1,51 +1,32 @@
-class Api::V1::ConversationsController < ApplicationController
-  before_action :set_api_v1_conversation, only: %i[ show update destroy ]
+module Api
+  module V1
+    class ConversationsController < ApplicationController
+      before_action :doorkeeper_authorize!
+      before_action :set_conversation, only: :destroy
 
-  # GET /api/v1/conversations
-  def index
-    @api_v1_conversations = Api::V1::Conversation.all
+      def index
+        conversations = Conversation.joins(:contact)
+                                    .where('conversations.user_id = :user_id OR contacts.phone_number = :phone_number', { user_id: current_user.id, phone_number: current_user.phone_number })
+                                    .ransack(params[:q])
+                                    .result
+                                    .order(created_at: :desc)
+                                    .page(params[:page] || 1)
+                                    .per(params[:per_page] || 10)
+        serializer = generate_collection_serializer(conversations, ConversationSerializer)
+        json_response_page(serializer, conversations)
+      end
 
-    render json: @api_v1_conversations
-  end
+      def destroy
+        @conversation.destroy
 
-  # GET /api/v1/conversations/1
-  def show
-    render json: @api_v1_conversation
-  end
+        message_response('Delete Conversation success!')
+      end
 
-  # POST /api/v1/conversations
-  def create
-    @api_v1_conversation = Api::V1::Conversation.new(api_v1_conversation_params)
+      private
 
-    if @api_v1_conversation.save
-      render json: @api_v1_conversation, status: :created, location: @api_v1_conversation
-    else
-      render json: @api_v1_conversation.errors, status: :unprocessable_entity
+      def set_conversation
+        @conversation = Conversation.find(params[:id])
+      end
     end
   end
-
-  # PATCH/PUT /api/v1/conversations/1
-  def update
-    if @api_v1_conversation.update(api_v1_conversation_params)
-      render json: @api_v1_conversation
-    else
-      render json: @api_v1_conversation.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /api/v1/conversations/1
-  def destroy
-    @api_v1_conversation.destroy
-  end
-
-  private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_api_v1_conversation
-      @api_v1_conversation = Api::V1::Conversation.find(params[:id])
-    end
-
-    # Only allow a list of trusted parameters through.
-    def api_v1_conversation_params
-      params.fetch(:api_v1_conversation, {})
-    end
 end

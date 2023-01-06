@@ -7,7 +7,7 @@
 4. run **'rake db:create'**
 5. run **'rake db:migrate'**
 6. run **'rake db:seed'** to build the doorkeeper application and default users and user-contacs
-7. running your apps by run **'rails s'**
+7. running the apps by run **'rails s'**
 
 ## Testing : ##
 1. go to **'https://www.postman.com/planetary-desert-155889/workspace/simple-chat/environment/18529314-3a307b18-37c8-4437-b75d-24c1f35a8203'**
